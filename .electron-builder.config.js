@@ -20,7 +20,10 @@ module.exports = async function () {
     extraMetadata: {
       version: getVersion(),
     },
-
+    publish: {
+      provider: 'github',
+      releaseType: 'release',
+    },
     // Specify linux target just for disabling snap compilation
     linux: {
       target: 'deb',
