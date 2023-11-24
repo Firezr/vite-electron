@@ -2,6 +2,11 @@ import {app} from 'electron';
 import './security-restrictions';
 import {restoreOrCreateWindow} from '/@/mainWindow';
 import {platform} from 'node:process';
+import log from 'electron-log/main';
+
+// log.initialize({preload: true});
+log.debug('Log from the main process');
+log.transports.file.level = 'debug';
 
 /**
  * Prevent electron from running multiple instances.
@@ -74,13 +79,40 @@ app
 if (import.meta.env.PROD) {
   app
     .whenReady()
-    .then(() =>
+    .then(() => {
       /**
        * Here we forced to use `require` since electron doesn't fully support dynamic import in asar archives
        * @see https://github.com/electron/electron/issues/38829
        * Potentially it may be fixed by this https://github.com/electron/electron/pull/37535
        */
-      require('electron-updater').autoUpdater.checkForUpdatesAndNotify(),
-    )
-    .catch(e => console.error('Failed check and install updates:', e));
+      // const {autoUpdater} = require('electron-updater');
+      // autoUpdater.logger = log;
+
+      // autoUpdater.on('checking-for-update', () => {
+      //   log.debug('Checking for update...');
+      // });
+      // autoUpdater.on('update-available', info => {
+      //   log.debug('Update available.', info);
+      // });
+      // autoUpdater.on('update-not-available', info => {
+      //   log.debug('Update not available.', info);
+      // });
+      // autoUpdater.on('error', err => {
+      //   log.error('There was a problem updating the application', err);
+      // });
+      // autoUpdater.on('download-progress', progress => {
+      //   log.debug(
+      //     `Download speed: ${progress.bytesPerSecond} - Downloaded ${progress.percent}% (${progress.transferred}/${progress.total})`,
+      //   );
+      // });
+      // autoUpdater.on('update-downloaded', info => {
+      //   log.debug('Update downloaded; will install in 5 seconds', info);
+      // });
+
+      // autoUpdater.checkForUpdatesAndNotify();
+      // autoUpdater.checkForUpdates();
+
+      require('electron-updater').autoUpdater.checkForUpdatesAndNotify();
+    })
+    .catch(e => log.error('Failed check and install updates:', e));
 }
